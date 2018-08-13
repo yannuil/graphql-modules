@@ -1,17 +1,7 @@
 import { injectable } from '@graphql-modules/core';
-import * as users from '../../../3rd-party/users';
+import * as users from '../../3rd-party/users';
 
-const data: users.User[] = [
-  {
-    id: 1,
-    name: 'Kamil',
-    phone: 'iPhone, sometimes Android phone',
-  },
-  {
-    id: 2,
-    name: 'Martyna',
-  },
-];
+import data from './data';
 
 @injectable()
 export class Users implements users.Users {

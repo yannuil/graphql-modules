@@ -1,5 +1,5 @@
-import { ResolverMap } from '../../../types';
-import { Users } from '../providers/users';
+import { ResolverMap } from '../../types';
+import { Users } from './users.provider';
 
 const Query: ResolverMap = {
   me(_, _args, { injector }) {

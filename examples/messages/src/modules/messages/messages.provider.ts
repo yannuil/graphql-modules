@@ -1,16 +1,20 @@
 import { injectable, inject } from '@graphql-modules/core';
-import { Users } from '../../../3rd-party/users';
+import { Users } from '../../3rd-party/users';
 
-import { Message, MessageDbObject } from '../types';
-
-const data: MessageDbObject[] = [];
+import data from './data';
 
 @injectable()
 export class Messages {
   constructor(@inject(Users) private users: Users) {}
 
-  async chat(userId: number): Promise<MessageDbObject[]> {
+  async chat(userId: number) {
     const me = await this.users.me();
+
+    if (me.id === userId) {
+      throw new Error(
+        'You cannot talk with yourself, you weird, crazy person!',
+      );
+    }
 
     return data.filter(msg => {
       const ids = [msg.recipient, msg.sender];
