@@ -32,7 +32,7 @@ const siteConfig = {
   // For no header links in the top nav bar -> headerLinks: [],
   headerLinks: [
     { doc: 'introduction/getting-started', label: 'Docs' },
-    { doc: 'api/core/api-readme', label: 'API Reference' },
+    // { doc: 'api/core/api-readme', label: 'API Reference' },
     { search: true },
     { page: 'help', label: 'Help' },
     { href: 'https://github.com/Urigo/graphql-modules', label: 'GitHub' },
