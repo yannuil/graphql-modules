@@ -15,6 +15,97 @@
 @media only screen and (min-width: 1500px) {
 }
 
+.navigationSlider .slidingNav ul li a {
+    font-family: "Montserrat";
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 1.64;
+    text-align: center;
+    color: #ffffff;
+}
+
+.backgroundTop {
+    background-image: url(/img/hexagonal.svg);
+    background-repeat: no-repeat;
+    background-size: 800px auto;
+    background-position: right -245px top -75px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    z-index: 100;
+}
+
+.homeContainer {
+    pointer-events: auto;
+
+    background-color: #13114a;
+    position: relative;
+    min-height: 650px;
+    display: flex;
+
+    background-image: url(/img/hexagonal.svg);
+    background-repeat: no-repeat;
+    background-size: 800px auto;
+    background-position: left -370px bottom -310px;
+}
+
+.imageTopRight {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    z-index: 101;
+}
+
+.homeSplashFade {
+    width: 50vw;
+}
+
+.homeSplashFade .inner {
+    text-align: left;
+}
+
+.homeSplashFade .pluginRowBlock {
+    justify-content: flex-start !important;
+}
+
+.homeSplashFade .homeWrapper {
+    padding-left: 165px;
+    padding-top: 165px;
+}
+
+.homeSplashFade .homeWrapper .inner h2 {
+    margin-bottom: 17px;
+}
+
+.homeSplashFade .homeWrapper .inner div {
+    font-family: "Montserrat";
+    font-size: 16px;
+    font-weight: 300;
+    line-height: 1.5;
+    color: #c1caff;
+}
+
+.homeSplashFade .homeWrapper .inner .buttonWrapper {
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    width: 180px;
+    height: 46px;
+    border-radius: 4px;
+    box-shadow: 10px 12px 24px 0 rgba(17, 94, 225, 0.37);
+    background-color: #115ee1;
+}
+
+.homeSplashFade .homeWrapper .inner .buttonWrapper a {
+    border: none;
+    font-family: "Montserrat";
+    font-size: 14px;
+    font-weight: 500;
+    color: #ffffff;
+}
+
 .homeContainer .homeWrapper .projectLogo img {
     height: 100%;
     max-height: 120px;
@@ -23,4 +114,27 @@
 .homeContainer .homeWrapper .projectLogo {
     position: relative;
     justify-content: center;
+}
+
+.fixedHeaderContainer {
+    padding-top: 25px;
+    padding-bottom: 25px;
+    z-index: 99;
+}
+
+.navPusher {
+    pointer-events: none;
+    padding-top: 65px;
+}
+
+.headerTitleWithLogo {
+    display: none !important;
+}
+
+.projectTitle {
+    font-family: "Montserrat";
+    font-size: 40px;
+    font-weight: bold;
+    line-height: 1.23;
+    color: #ffffff;
 }

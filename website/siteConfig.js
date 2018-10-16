@@ -31,24 +31,24 @@ const siteConfig = {
 
   // For no header links in the top nav bar -> headerLinks: [],
   headerLinks: [
-    { doc: 'introduction/getting-started', label: 'Docs' },
-    { doc: 'api/core/api-readme', label: 'API Reference' },
+    { doc: 'api/core/api-readme', label: 'API REFERENCE' },
+    { doc: 'introduction/getting-started', label: 'DOCUMENTATION' },
     { search: true },
-    { page: 'help', label: 'Help' },
-    { href: 'https://github.com/Urigo/graphql-modules', label: 'GitHub' },
+    { page: 'help', label: 'SUPPORT' },
+    { href: 'https://github.com/Urigo/graphql-modules', label: 'GITHUB' },
   ],
 
   // If you have users set above, you add it here:
   users,
 
   /* path to images for header/footer */
-  headerIcon: 'img/logo.svg',
+  headerIcon: 'img/gql_modules_logo.svg',
   footerIcon: 'img/logo.svg',
   favicon: 'img/favicon.png',
 
   /* Colors for website */
   colors: {
-    primaryColor: '#181E25',
+    primaryColor: '#13114a',
     secondaryColor: '#181E25',
   },
 
@@ -64,6 +64,9 @@ const siteConfig = {
 
   // Add custom scripts here that would be placed in <script> tags.
   scripts: ['https://buttons.github.io/buttons.js'],
+
+  // Stylesheets
+  stylesheets: ['https://fonts.googleapis.com/css?family=Montserrat:300,400,500,700'],
 
   // On page navigation for the current documentation page.
   onPageNav: 'separate',

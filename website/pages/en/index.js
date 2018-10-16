@@ -46,6 +46,7 @@ Button.defaultProps = {
 
 const SplashContainer = props => (
   <div className="homeContainer">
+    <img className="imageTopRight" src="/img/image_top_right.svg" width="778px" height="605px"></img>
     <div className="homeSplashFade">
       <div className="wrapper homeWrapper">{props.children}</div>
     </div>
@@ -61,14 +62,10 @@ const Logo = props => (
 const ProjectTitle = () => (
   <React.Fragment>
     <h2 className="projectTitle">
-      {siteConfig.title}
-      <small>{siteConfig.tagline}</small>
+      THE BEST FRAMEWORK FOR GRAPHQL!
     </h2>
     <div>
-      GraphQL Modules is a set of extra tools, structure and guidelines for your GraphQL server.
-    </div>
-    <div>
-      Use it to get reusable, maintainable, testable and extendable GraphQL servers.
+      GraphQL Modules is a set of extra tools, structure and guidelines for your GraphQL server. Use it to get reusable, maintainable, testable and extendable GraphQL servers.
     </div>
     <br />
   </React.Fragment>
@@ -88,12 +85,9 @@ class HomeSplash extends React.Component {
     return (
       <SplashContainer>
         <div className="inner">
-          <Logo img_src={imgUrl('logo.svg')}/>
           <ProjectTitle/>
           <PromoSection>
-            <Button href={docUrl('introduction/getting-started', language)}>Getting Started</Button>
-            <Button href={docUrl('introduction/modules', language)}>Documentation</Button>
-            <Button href={docUrl('api/core/api-readme', language)}>API Reference</Button>
+            <Button href={docUrl('introduction/getting-started', language)}>Get Started</Button>
           </PromoSection>
         </div>
       </SplashContainer>
@@ -222,6 +216,7 @@ class Index extends React.Component {
 
     return (
       <div>
+        <div className="backgroundTop"></div>
         <HomeSplash language={language}/>
         <div className="mainContainer">
           <Features/>
