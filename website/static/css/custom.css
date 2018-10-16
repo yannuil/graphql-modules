@@ -138,6 +138,10 @@
 @media only screen and (min-width: 1500px) {
 }
 
+body {
+  font-family: 'Montserrat', georgia, serif;
+}
+
 .homeContainer .homeWrapper .projectLogo img {
   height: 100%;
   max-height: 120px;
@@ -149,7 +153,6 @@
 }
 
 #docsNav {
-  font-family: 'Montserrat', georgia, serif;
   border-right: solid 1px #b4bcd9;
 }
 
@@ -202,8 +205,34 @@
 }
 
 #docsNav .navListItem.navListItemActive a::before {
+  margin-right: 8px;
   transform-origin: center;
   transform: translateY(-2px) translateX(-7px) scale(2);
   background-color: transparent;
   content: "•";
+}
+
+.docMainContainer {
+  font-size: 16px;
+  line-height: 1.75;
+  color: #677897;
+}
+
+.docMainContainer h1,
+.docMainContainer h2,
+.docMainContainer h3,
+.docMainContainer h4,
+.docMainContainer h5,
+.docMainContainer h6 {
+  color: #243265;
+}
+
+.docMainContainer .button {
+  color: #403b6d;
+  border: solid 1px #c9ced6;
+}
+
+.docMainContainer .button:hover {
+  color: white;
+  background-color: #677897;
 }
