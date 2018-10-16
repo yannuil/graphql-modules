@@ -43,7 +43,7 @@ const siteConfig = {
 
   /* path to images for header/footer */
   headerIcon: 'img/gql_modules_logo.svg',
-  footerIcon: 'img/logo.svg',
+  footerIcon: 'img/gql_modules_logo.svg',
   favicon: 'img/favicon.png',
 
   /* Colors for website */
