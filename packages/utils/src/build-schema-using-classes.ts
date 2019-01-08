@@ -70,7 +70,7 @@ export function FieldProperty<TSource, TContext, TArgs, TResult>(fieldDecoratorC
     const fieldResolver = fieldDecoratorConfig.resolve;
     const fieldConfig: GraphQLFieldConfig<TSource, TContext, TArgs> = {
       type: fieldGraphQLType,
-      resolve: (root, args) => fieldResolver.call(root, ...Object.values(args)), // TODO: NOT SAFE
+      resolve: (root, args) => fieldResolver.call(root, ...Object['values'](args)), // TODO: NOT SAFE
     };
     existingConfig.fields = existingConfig.fields || {};
     existingConfig.fields[fieldName] = {
@@ -89,7 +89,7 @@ export function FieldMethod<TSource, TContext, TArgs, TResult>(fieldDecoratorCon
     const fieldResolver = fieldDecoratorConfig.resolve || target[propertyKey];
     const fieldConfig: GraphQLFieldConfig<TSource, TContext, TArgs> = {
       type: fieldGraphQLType,
-      resolve: (root, args) => fieldResolver.call(root, ...Object.values(args)), // TODO: NOT SAFE
+      resolve: (root, args) => fieldResolver.call(root, ...Object['values'](args)), // TODO: NOT SAFE
     };
     existingConfig.fields = existingConfig.fields || {};
     existingConfig.fields[fieldName] = {
@@ -115,4 +115,3 @@ export function ObjectType<TSource, TContext>(config ?: GraphQLObjectTypeConfig<
 export function getNamedTypeFromClass(target: Function): GraphQLNamedType {
   return Reflect.getMetadata(GRAPHQL_NAMED_TYPE, target);
 }
-
