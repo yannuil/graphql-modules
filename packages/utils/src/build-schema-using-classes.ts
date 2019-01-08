@@ -1,7 +1,7 @@
 // tslint:disable-next-line:no-reference
 /// <reference path="../../../node_modules/reflect-metadata/index.d.ts" />
 
-import { GraphQLObjectType, GraphQLObjectTypeConfig, GraphQLFieldResolver, GraphQLNamedType, GraphQLFieldConfig, GraphQLResolveInfo, GraphQLString, GraphQLFloat, GraphQLInputType, GraphQLArgumentConfig } from 'graphql';
+import { GraphQLObjectType, GraphQLObjectTypeConfig, GraphQLNamedType, GraphQLFieldConfig, GraphQLString, GraphQLFloat, GraphQLInputType, GraphQLArgumentConfig } from 'graphql';
 
 export const GRAPHQL_NAMED_TYPE = 'graphql:named-type';
 export const GRAPHQL_INPUT_TYPE = 'graphql:input-type';
@@ -17,12 +17,14 @@ export const DEFAULT_SCALAR_TYPE_MAP = new Map<Type<any>, GraphQLNamedType>([
   [Number, GraphQLFloat],
 ]);
 
-export type FieldResolver<TSource, TArgs extends any[], TResult> = (
+export type ObjectValue<T> = T[keyof T];
+
+export type FieldResolver<TSource, TArgs, TResult> = (
   this: TSource,
-  ...args: TArgs
+  ...args: Array<ObjectValue<TArgs>>
 ) => Promise<TResult> | TResult;
 
-export interface FieldDecoratorConfig<TSource, TArgs extends any[], TResult> {
+export interface FieldDecoratorConfig<TSource, TArgs, TResult> {
   name?: string;
   type?: Type<TResult> | GraphQLNamedType;
   resolve?: FieldResolver<TSource, TArgs, TResult>;
@@ -34,7 +36,7 @@ export interface ArgumentParameterDecoratorConfig {
   fieldName?: string;
 }
 
-export function ArgumentParameter<TSource, TContext, TArgs extends any[]>(argumentParameterConfig: ArgumentParameterDecoratorConfig): ParameterDecorator {
+export function ArgumentParameter<TSource, TContext, TArgs>(argumentParameterConfig: ArgumentParameterDecoratorConfig): ParameterDecorator {
   return (target, propertyKey, parameterIndex) => {
     const existingConfig = Reflect.getMetadata(GRAPHQL_OBJECT_TYPE_CONFIG, target.constructor) || {};
     const fieldName = argumentParameterConfig.fieldName || propertyKey;
@@ -59,7 +61,7 @@ export function ArgumentParameter<TSource, TContext, TArgs extends any[]>(argume
   };
 }
 
-export function FieldProperty<TSource, TContext, TArgs extends any[], TResult>(fieldDecoratorConfig: FieldDecoratorConfig<TSource, TArgs, TResult> = {}): PropertyDecorator {
+export function FieldProperty<TSource, TContext, TArgs, TResult>(fieldDecoratorConfig: FieldDecoratorConfig<TSource, TArgs, TResult> = {}): PropertyDecorator {
   return (target: TSource, propertyKey) => {
     const existingConfig = Reflect.getMetadata(GRAPHQL_OBJECT_TYPE_CONFIG, target.constructor) || {};
     const fieldName = fieldDecoratorConfig.name || propertyKey;
@@ -78,7 +80,7 @@ export function FieldProperty<TSource, TContext, TArgs extends any[], TResult>(f
     Reflect.defineMetadata(GRAPHQL_OBJECT_TYPE_CONFIG, existingConfig, target.constructor);
   };
 }
-export function FieldMethod<TSource, TContext, TArgs extends any[], TResult>(fieldDecoratorConfig: FieldDecoratorConfig<TSource, TArgs, TResult> = {}): MethodDecorator {
+export function FieldMethod<TSource, TContext, TArgs, TResult>(fieldDecoratorConfig: FieldDecoratorConfig<TSource, TArgs, TResult> = {}): MethodDecorator {
   return (target: TSource, propertyKey) => {
     const existingConfig = Reflect.getMetadata(GRAPHQL_OBJECT_TYPE_CONFIG, target.constructor) || {};
     const fieldName = fieldDecoratorConfig.name || propertyKey;
@@ -100,7 +102,7 @@ export function FieldMethod<TSource, TContext, TArgs extends any[], TResult>(fie
 
 export function ObjectType<TSource, TContext>(config ?: GraphQLObjectTypeConfig<TSource, TContext>): ClassDecorator {
   return target => {
-    const existingConfig = Reflect.getMetadata(GRAPHQL_OBJECT_TYPE_CONFIG, target) || {};
+    const existingConfig: GraphQLObjectTypeConfig<TSource, TContext> = Reflect.getMetadata(GRAPHQL_OBJECT_TYPE_CONFIG, target) || {};
     Reflect.defineMetadata(GRAPHQL_NAMED_TYPE, new GraphQLObjectType({
       name: target.name,
       ...existingConfig,
@@ -113,3 +115,4 @@ export function ObjectType<TSource, TContext>(config ?: GraphQLObjectTypeConfig<
 export function getNamedTypeFromClass(target: Function): GraphQLNamedType {
   return Reflect.getMetadata(GRAPHQL_NAMED_TYPE, target);
 }
+
