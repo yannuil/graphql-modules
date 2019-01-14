@@ -6,8 +6,8 @@ import { ObjectValue, Type, DESIGN_PARAMTYPES, DESIGN_TYPE, DESIGN_RETURNTYPE } 
 import { getScalarTypeFromClass } from './scalar-type';
 import { getInputTypeFromClass } from './input-object-type';
 
-const GRAPHQL_OBJECT_TYPE_CONFIG = Symbol('graphql:object-type-config');
-const GRAPHQL_OBJECT_TYPE = Symbol('graphql:object-type');
+export const GRAPHQL_OBJECT_TYPE_CONFIG = Symbol('graphql:object-type-config');
+export const GRAPHQL_OBJECT_TYPE = Symbol('graphql:object-type');
 
 export type FieldResolver<TSource, TArgs, TResult> = (
   this: TSource,

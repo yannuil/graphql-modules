@@ -1,6 +1,6 @@
 import 'reflect-metadata';
-import { ObjectType, getObjectTypeFromClass, FieldProperty, FieldMethod, ArgumentParameter, InputObjectType, getInputTypeFromClass, InputFieldProperty } from '../src/resolver-first';
-import { printType, graphql, GraphQLSchema, GraphQLObjectType, print } from 'graphql';
+import { ObjectType, getObjectTypeFromClass, FieldProperty, FieldMethod, ArgumentParameter, InputObjectType, getInputTypeFromClass, InputFieldProperty, InterfaceType } from '../src/resolver-first';
+import { printType, graphql, GraphQLSchema, GraphQLObjectType, print, GraphQLInterfaceType } from 'graphql';
 function stripWhitespaces(str: string): string {
   return str.replace(/\s+/g, ' ').trim();
 }
@@ -159,6 +159,54 @@ describe('ResolverFirst', async () => {
       }), `{ foo(foo: { message: "FOO" }) { message } }`);
       expect(result.errors).toBeFalsy();
       expect(result.data.foo.message).toBe('FOO');
+    });
+  });
+  describe('Interface Type', async () => {
+    it('should build interface type using InterfaceType decorator', async () => {
+      @InterfaceType()
+      class Foo { }
+      expect(stripWhitespaces(printType(getObjectTypeFromClass(Foo)))).toBe(stripWhitespaces(`
+        interface Foo {
+
+        }
+      `));
+    });
+    it('should build interface type with scalar fields using FieldProperty decorator', async () => {
+      @InterfaceType()
+      class Foo {
+        @FieldProperty()
+        bar: string;
+      }
+      expect(stripWhitespaces(printType(getObjectTypeFromClass(Foo)))).toBe(stripWhitespaces(`
+        interface Foo {
+          bar: String
+        }
+      `));
+    });
+    it('should implements other types', async () => {
+      @InterfaceType()
+      class Foo {
+        @FieldProperty()
+        foo: string;
+      }
+      @ObjectType({
+        interfaces: [getObjectTypeFromClass(Foo) as any],
+      })
+      class Bar implements Foo {
+        @FieldProperty()
+        foo: string;
+        @FieldProperty()
+        bar: string;
+        @FieldProperty()
+        qux: string;
+      }
+      expect(stripWhitespaces(printType(getObjectTypeFromClass(Bar)))).toBe(stripWhitespaces(`
+        type Bar implements Foo {
+          foo: String
+          bar: String
+          qux: String
+        }
+      `));
     });
   });
 });
