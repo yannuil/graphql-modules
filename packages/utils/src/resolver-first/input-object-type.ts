@@ -10,7 +10,7 @@ const GRAPHQL_INPUT_TYPE = Symbol('graphql:input-type');
 
 export interface InputFieldDecoratorConfig<TResult> {
   name?: string;
-  type?: Type<TResult> | GraphQLInputType;
+  type?: Type<TResult> | GraphQLInputType | object;
 }
 
 export function InputFieldProperty<TSource>(inputFieldDecoratorConfig: InputFieldDecoratorConfig<TSource> = {}): PropertyDecorator {

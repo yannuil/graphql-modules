@@ -279,7 +279,7 @@ describe('ResolverFirst', async () => {
       EnumType({ name: 'Foo' })(Foo);
       @InputObjectType()
       class Bar {
-        @InputFieldProperty({ type: Foo as any })
+        @InputFieldProperty({ type: Foo })
         foo: Foo;
       }
       expect(stripWhitespaces(printType(getInputTypeFromClass(Bar) as any))).toBe(stripWhitespaces(`
