@@ -1,7 +1,7 @@
 // tslint:disable-next-line:no-reference
 /// <reference path="../../../../node_modules/reflect-metadata/index.d.ts" />
 
-import { GraphQLObjectType, GraphQLObjectTypeConfig, GraphQLFieldConfig, GraphQLInputType, GraphQLArgumentConfig, GraphQLNamedType } from 'graphql';
+import { GraphQLObjectType, GraphQLObjectTypeConfig, GraphQLFieldConfig, GraphQLInputType, GraphQLArgumentConfig, GraphQLNamedType, GraphQLList } from 'graphql';
 import { ObjectValue, Type, DESIGN_PARAMTYPES, DESIGN_TYPE, DESIGN_RETURNTYPE, AnyType } from './common';
 import { getScalarTypeFromClass } from './scalar-type';
 import { getInputTypeFromClass } from './input-object-type';
@@ -56,7 +56,7 @@ export function FieldProperty<TSource, TContext, TArgs, TResult>(fieldDecoratorC
     const existingConfig = Reflect.getMetadata(GRAPHQL_OBJECT_TYPE_CONFIG, target.constructor) || {};
     const fieldName = fieldDecoratorConfig.name || propertyKey;
     const fieldType = fieldDecoratorConfig.type || Reflect.getMetadata(DESIGN_TYPE, target, propertyKey);
-    const fieldGraphQLType = Reflect.getMetadata(GRAPHQL_OBJECT_TYPE, fieldType) || getScalarTypeFromClass(fieldType) || fieldType;
+    const fieldGraphQLType = getObjectTypeFromClass(fieldType) || getScalarTypeFromClass(fieldType) || fieldType;
     const fieldResolver = fieldDecoratorConfig.resolve;
     const fieldConfig: GraphQLFieldConfig<TSource, TContext, TArgs> = {
       type: fieldGraphQLType,
@@ -75,7 +75,7 @@ export function FieldMethod<TSource, TContext, TArgs, TResult>(fieldDecoratorCon
     const existingConfig = Reflect.getMetadata(GRAPHQL_OBJECT_TYPE_CONFIG, target.constructor) || {};
     const fieldName = fieldDecoratorConfig.name || propertyKey;
     const fieldType = fieldDecoratorConfig.type || Reflect.getMetadata(DESIGN_RETURNTYPE, target, propertyKey);
-    const fieldGraphQLType = Reflect.getMetadata(GRAPHQL_OBJECT_TYPE, fieldType) || getScalarTypeFromClass(fieldType) || fieldType;
+    const fieldGraphQLType = getObjectTypeFromClass(fieldType) || getScalarTypeFromClass(fieldType) || fieldType;
     const fieldResolver = fieldDecoratorConfig.resolve || target[propertyKey];
     const fieldConfig: GraphQLFieldConfig<TSource, TContext, TArgs> = {
       type: fieldGraphQLType,
@@ -102,5 +102,9 @@ export function ObjectType<TSource, TContext>(config ?: Partial<GraphQLObjectTyp
 }
 
 export function getObjectTypeFromClass<T>(target: Type<T> | unknown) {
+  if (target instanceof Array) {
+    const elementType = getObjectTypeFromClass(target[0]);
+    return elementType && new GraphQLList(elementType);
+  }
   return Reflect.getMetadata(GRAPHQL_OBJECT_TYPE, target as Type<T>);
 }

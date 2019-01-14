@@ -2,8 +2,19 @@ import 'reflect-metadata';
 import {
   ObjectType,
   getObjectTypeFromClass,
-  FieldProperty, FieldMethod, ArgumentParameter, InputObjectType, getInputTypeFromClass, InputFieldProperty, InterfaceType, EnumType, getScalarTypeFromClass, ScalarType, UnionType } from '../src/resolver-first';
-import { printType, graphql, GraphQLSchema, GraphQLObjectType, print, GraphQLInterfaceType, GraphQLNamedType } from 'graphql';
+  FieldProperty,
+  FieldMethod,
+  ArgumentParameter,
+  InputObjectType,
+  getInputTypeFromClass,
+  InputFieldProperty,
+  InterfaceType,
+  EnumType,
+  UnionType,
+  getScalarTypeFromClass,
+  ScalarType,
+} from '../src/resolver-first';
+import { printType, graphql, GraphQLSchema, GraphQLObjectType } from 'graphql';
 function stripWhitespaces(str: string): string {
   return str.replace(/\s+/g, ' ').trim();
 }
@@ -28,6 +39,18 @@ describe('ResolverFirst', async () => {
       expect(stripWhitespaces(printType(getObjectTypeFromClass(Foo)))).toBe(stripWhitespaces(`
         type Foo {
           bar: String
+        }
+      `));
+    });
+    it('should build object type with array of scalar fields using FieldProperty decorator', async () => {
+      @ObjectType()
+      class Foo {
+        @FieldProperty({ type: [String] })
+        bar: string[];
+      }
+      expect(stripWhitespaces(printType(getObjectTypeFromClass(Foo)))).toBe(stripWhitespaces(`
+        type Foo {
+          bar: [String]
         }
       `));
     });
@@ -119,6 +142,18 @@ describe('ResolverFirst', async () => {
       expect(stripWhitespaces(printType(getInputTypeFromClass(Foo)))).toBe(stripWhitespaces(`
         input Foo {
           bar: String
+        }
+      `));
+    });
+    it('should build input object type with array of scalar fields using InputFieldProperty decorator', async () => {
+      @InputObjectType()
+      class Foo {
+        @InputFieldProperty({ type: [String] })
+        bar: string[];
+      }
+      expect(stripWhitespaces(printType(getInputTypeFromClass(Foo)))).toBe(stripWhitespaces(`
+        input Foo {
+          bar: [String]
         }
       `));
     });
@@ -215,14 +250,14 @@ describe('ResolverFirst', async () => {
   describe('Scalar Type', async () => {
     it('should build scalar type using ScalarType decorator', async () => {
       @ScalarType()
-      class Foo {}
+      class Foo { }
       expect(stripWhitespaces(printType(getScalarTypeFromClass(Foo)))).toBe(stripWhitespaces(`
         scalar Foo
       `));
     });
     it('should build object type with scalar field', async () => {
       @ScalarType()
-      class Foo {}
+      class Foo { }
       @ObjectType()
       class Query {
         @FieldProperty({ type: Foo })
@@ -236,7 +271,7 @@ describe('ResolverFirst', async () => {
     });
     it('should build input object type with scalar field', async () => {
       @ScalarType()
-      class Foo {}
+      class Foo { }
       @InputObjectType()
       class Bar {
         @InputFieldProperty({ type: Foo })

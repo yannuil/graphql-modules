@@ -1,7 +1,7 @@
 // tslint:disable-next-line:no-reference
 /// <reference path="../../../../node_modules/reflect-metadata/index.d.ts" />
 
-import { GraphQLScalarTypeConfig, GraphQLScalarType, GraphQLString, GraphQLFloat, GraphQLBoolean, GraphQLNamedType } from 'graphql';
+import { GraphQLScalarTypeConfig, GraphQLScalarType, GraphQLString, GraphQLFloat, GraphQLBoolean, GraphQLNamedType, GraphQLList } from 'graphql';
 import { Type } from './common';
 
 export const GRAPHQL_SCALAR_TYPE = Symbol('graphql:scalar-type');
@@ -25,5 +25,9 @@ const DEFAULT_SCALAR_TYPE_MAP = new Map<Type<any>, GraphQLScalarType>([
 ]);
 
 export function getScalarTypeFromClass<T>(target: Type<T> | object) {
+  if (target instanceof Array) {
+    const elementType = getScalarTypeFromClass(target[0]);
+    return elementType && new GraphQLList(elementType);
+  }
   return DEFAULT_SCALAR_TYPE_MAP.get(target as Type<T>) || Reflect.getMetadata(GRAPHQL_SCALAR_TYPE, target);
 }
