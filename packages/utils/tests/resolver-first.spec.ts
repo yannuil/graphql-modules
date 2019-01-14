@@ -265,7 +265,7 @@ describe('ResolverFirst', async () => {
       EnumType({ name: 'Foo' })(Foo);
       @ObjectType()
       class Query {
-        @FieldProperty({ type: Foo as any })
+        @FieldProperty({ type: Foo }) // Enums cannot be reflected, so we should define them explicitly
         foo: Foo;
       }
       expect(stripWhitespaces(printType(getObjectTypeFromClass(Query)))).toBe(stripWhitespaces(`
@@ -279,7 +279,7 @@ describe('ResolverFirst', async () => {
       EnumType({ name: 'Foo' })(Foo);
       @InputObjectType()
       class Bar {
-        @InputFieldProperty({ type: Foo })
+        @InputFieldProperty({ type: Foo }) // Enums cannot be reflected, so we should define them explicitly
         foo: Foo;
       }
       expect(stripWhitespaces(printType(getInputTypeFromClass(Bar) as any))).toBe(stripWhitespaces(`
@@ -302,7 +302,7 @@ describe('ResolverFirst', async () => {
       type Foo = string | number;
       @ObjectType()
       class Query {
-        @FieldProperty({ type: Foo })
+        @FieldProperty({ type: Foo }) // Unions cannot be reflected, so we should define them explicitly
         foo: Foo;
       }
       expect(stripWhitespaces(printType(getObjectTypeFromClass(Query)))).toBe(stripWhitespaces(`

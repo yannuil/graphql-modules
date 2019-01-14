@@ -16,7 +16,7 @@ export type FieldResolver<TSource, TArgs, TResult> = (
 
 export interface FieldDecoratorConfig<TSource, TArgs, TResult> {
   name?: string;
-  type?: Type<TResult> | GraphQLObjectType | AnyType;
+  type?: Type<TResult> | GraphQLObjectType | AnyType | unknown;
   resolve?: FieldResolver<TSource, TArgs, TResult>;
 }
 
