@@ -1,7 +1,7 @@
 // tslint:disable-next-line:no-reference
 /// <reference path="../../../../node_modules/reflect-metadata/index.d.ts" />
 
-import { GraphQLObjectType, GraphQLObjectTypeConfig, GraphQLFieldConfig, GraphQLInputType, GraphQLArgumentConfig } from 'graphql';
+import { GraphQLObjectType, GraphQLObjectTypeConfig, GraphQLFieldConfig, GraphQLInputType, GraphQLArgumentConfig, GraphQLNamedType } from 'graphql';
 import { ObjectValue, Type, DESIGN_PARAMTYPES, DESIGN_TYPE, DESIGN_RETURNTYPE, AnyType } from './common';
 import { getScalarTypeFromClass } from './scalar-type';
 import { getInputTypeFromClass } from './input-object-type';
@@ -101,6 +101,6 @@ export function ObjectType<TSource, TContext>(config ?: Partial<GraphQLObjectTyp
   };
 }
 
-export function getObjectTypeFromClass<T>(target: Type<T>): GraphQLObjectType {
-  return Reflect.getMetadata(GRAPHQL_OBJECT_TYPE, target);
+export function getObjectTypeFromClass<T>(target: Type<T> | unknown) {
+  return Reflect.getMetadata(GRAPHQL_OBJECT_TYPE, target as Type<T>);
 }

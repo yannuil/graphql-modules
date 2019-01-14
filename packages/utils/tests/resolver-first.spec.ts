@@ -3,7 +3,7 @@ import {
   ObjectType,
   getObjectTypeFromClass,
   FieldProperty, FieldMethod, ArgumentParameter, InputObjectType, getInputTypeFromClass, InputFieldProperty, InterfaceType, EnumType, getScalarTypeFromClass, ScalarType, UnionType } from '../src/resolver-first';
-import { printType, graphql, GraphQLSchema, GraphQLObjectType, print, GraphQLInterfaceType } from 'graphql';
+import { printType, graphql, GraphQLSchema, GraphQLObjectType, print, GraphQLInterfaceType, GraphQLNamedType } from 'graphql';
 function stripWhitespaces(str: string): string {
   return str.replace(/\s+/g, ' ').trim();
 }
@@ -104,7 +104,7 @@ describe('ResolverFirst', async () => {
     it('should build input object type using InputObjectType decorator', async () => {
       @InputObjectType()
       class Foo { }
-      expect(stripWhitespaces(printType(getInputTypeFromClass(Foo) as any))).toBe(stripWhitespaces(`
+      expect(stripWhitespaces(printType(getInputTypeFromClass(Foo)))).toBe(stripWhitespaces(`
         input Foo {
 
         }
@@ -116,7 +116,7 @@ describe('ResolverFirst', async () => {
         @InputFieldProperty()
         bar: string;
       }
-      expect(stripWhitespaces(printType(getInputTypeFromClass(Foo) as any))).toBe(stripWhitespaces(`
+      expect(stripWhitespaces(printType(getInputTypeFromClass(Foo)))).toBe(stripWhitespaces(`
         input Foo {
           bar: String
         }
@@ -193,7 +193,7 @@ describe('ResolverFirst', async () => {
         foo: string;
       }
       @ObjectType({
-        interfaces: [getObjectTypeFromClass(Foo) as any],
+        interfaces: [getObjectTypeFromClass(Foo)],
       })
       class Bar implements Foo {
         @FieldProperty()
@@ -216,7 +216,7 @@ describe('ResolverFirst', async () => {
     it('should build scalar type using ScalarType decorator', async () => {
       @ScalarType()
       class Foo {}
-      expect(stripWhitespaces(printType(getScalarTypeFromClass(Foo as any)))).toBe(stripWhitespaces(`
+      expect(stripWhitespaces(printType(getScalarTypeFromClass(Foo)))).toBe(stripWhitespaces(`
         scalar Foo
       `));
     });
@@ -225,7 +225,7 @@ describe('ResolverFirst', async () => {
       class Foo {}
       @ObjectType()
       class Query {
-        @FieldProperty({ type: Foo as any })
+        @FieldProperty({ type: Foo })
         foo: Foo;
       }
       expect(stripWhitespaces(printType(getObjectTypeFromClass(Query)))).toBe(stripWhitespaces(`
@@ -239,10 +239,10 @@ describe('ResolverFirst', async () => {
       class Foo {}
       @InputObjectType()
       class Bar {
-        @InputFieldProperty({ type: Foo as any })
+        @InputFieldProperty({ type: Foo })
         foo: Foo;
       }
-      expect(stripWhitespaces(printType(getInputTypeFromClass(Bar) as any))).toBe(stripWhitespaces(`
+      expect(stripWhitespaces(printType(getInputTypeFromClass(Bar)))).toBe(stripWhitespaces(`
         input Bar {
           foo: Foo
         }
@@ -253,7 +253,7 @@ describe('ResolverFirst', async () => {
     it('should build enum type using EnumType decorator', async () => {
       enum Foo { a = 'a', b = 'b' }
       EnumType({ name: 'Foo' })(Foo);
-      expect(stripWhitespaces(printType(getScalarTypeFromClass(Foo as any)))).toBe(stripWhitespaces(`
+      expect(stripWhitespaces(printType(getScalarTypeFromClass(Foo)))).toBe(stripWhitespaces(`
         enum Foo {
           a
           b
@@ -282,7 +282,7 @@ describe('ResolverFirst', async () => {
         @InputFieldProperty({ type: Foo }) // Enums cannot be reflected, so we should define them explicitly
         foo: Foo;
       }
-      expect(stripWhitespaces(printType(getInputTypeFromClass(Bar) as any))).toBe(stripWhitespaces(`
+      expect(stripWhitespaces(printType(getInputTypeFromClass(Bar)))).toBe(stripWhitespaces(`
         input Bar {
           foo: Foo
         }
@@ -293,7 +293,7 @@ describe('ResolverFirst', async () => {
     it('should build union type using UnionType decorator', async () => {
       const Foo = UnionType({ name: 'Foo', types: [String, Number], resolveType: () => String })({});
       type Foo = string | number;
-      expect(stripWhitespaces(printType(getObjectTypeFromClass(Foo as any)))).toBe(stripWhitespaces(`
+      expect(stripWhitespaces(printType(getObjectTypeFromClass(Foo)))).toBe(stripWhitespaces(`
         union Foo = String | Float
       `));
     });

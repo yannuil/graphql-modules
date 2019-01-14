@@ -1,7 +1,7 @@
 // tslint:disable-next-line:no-reference
 /// <reference path="../../../../node_modules/reflect-metadata/index.d.ts" />
 
-import { GraphQLInputObjectType, GraphQLInputObjectTypeConfig, GraphQLInputFieldConfig, GraphQLInputType } from 'graphql';
+import { GraphQLInputObjectType, GraphQLInputObjectTypeConfig, GraphQLInputFieldConfig, GraphQLInputType, GraphQLNamedType } from 'graphql';
 import { Type, DESIGN_TYPE } from './common';
 import { getScalarTypeFromClass } from '.';
 
@@ -42,6 +42,6 @@ export function InputObjectType(config ?: Partial<GraphQLInputObjectTypeConfig>)
   };
 }
 
-export function getInputTypeFromClass<T>(target: Type<T>): GraphQLInputType {
+export function getInputTypeFromClass<T>(target: Type<T>) {
   return Reflect.getMetadata(GRAPHQL_INPUT_TYPE, target);
 }
