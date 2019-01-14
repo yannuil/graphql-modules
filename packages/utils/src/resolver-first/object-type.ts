@@ -1,7 +1,7 @@
 // tslint:disable-next-line:no-reference
 /// <reference path="../../../../node_modules/reflect-metadata/index.d.ts" />
 
-import { GraphQLObjectType, GraphQLObjectTypeConfig, GraphQLFieldConfig, GraphQLInputType, GraphQLArgumentConfig, GraphQLNamedType, GraphQLList } from 'graphql';
+import { GraphQLObjectType, GraphQLObjectTypeConfig, GraphQLFieldConfig, GraphQLInputType, GraphQLArgumentConfig, GraphQLList } from 'graphql';
 import { ObjectValue, Type, DESIGN_PARAMTYPES, DESIGN_TYPE, DESIGN_RETURNTYPE, AnyType } from './common';
 import { getScalarTypeFromClass } from './scalar-type';
 import { getInputTypeFromClass } from './input-object-type';
@@ -98,10 +98,11 @@ export function ObjectType<TSource, TContext>(config ?: Partial<GraphQLObjectTyp
       ...existingConfig,
       ...(config || {}),
     }), target);
+    return target;
   };
 }
 
-export function getObjectTypeFromClass<T>(target: Type<T> | unknown) { // TODO: unknowns should be replaced with a proper type
+export function getObjectTypeFromClass<T>(target: Type<T> | unknown): any { // TODO: unknowns should be replaced with a proper type
   if (target instanceof Array) {
     const elementType = getObjectTypeFromClass(target[0]);
     return elementType && new GraphQLList(elementType);

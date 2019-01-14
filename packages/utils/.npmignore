@@ -3,3 +3,4 @@ node_modules
 tests
 !dist
 tsconfig.json
+examples
