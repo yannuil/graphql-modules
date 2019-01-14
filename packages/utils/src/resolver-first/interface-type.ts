@@ -12,7 +12,7 @@ export function ResolveTypeMethod<TSource, TContext>(): MethodDecorator {
   };
 }
 
-export function InterfaceType<TSource, TContext>(config ?: Partial<GraphQLInterfaceTypeConfig<TSource, TContext>>) {
+export function InterfaceType<TSource, TContext>(config ?: Partial<GraphQLInterfaceTypeConfig<TSource, TContext>>): ClassDecorator {
   return target => {
     const existingConfig: GraphQLInterfaceTypeConfig<TSource, TContext> = Reflect.getMetadata(GRAPHQL_OBJECT_TYPE_CONFIG, target) || {};
     Reflect.defineMetadata(GRAPHQL_OBJECT_TYPE, new GraphQLInterfaceType({
