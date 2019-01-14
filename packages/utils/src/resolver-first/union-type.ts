@@ -1,16 +1,16 @@
 import { GraphQLUnionType } from 'graphql';
-import { GRAPHQL_SCALAR_TYPE, getScalarTypeFromClass } from './scalar-type';
-import { Type } from './common';
+import { getScalarTypeFromClass } from './scalar-type';
 import { GRAPHQL_OBJECT_TYPE } from './object-type';
+import { AnyType } from './common';
 
-interface UnionTypeDecoratorConfig<TResult> {
+interface UnionTypeDecoratorConfig<TTypes extends AnyType[]> {
   name: string;
-  types: Array<Type<TResult>>;
-  resolveType: (...args: any[]) => Type<TResult>;
+  types: TTypes;
+  resolveType: (...args: any[]) => InstanceType<TTypes[any]>;
 }
 
-export function UnionType<TResult>(config: UnionTypeDecoratorConfig<TResult>) {
-  return <T>(target: T) => {
+export function UnionType<TTypes extends Array<new (...args: any[]) => any>>(config: UnionTypeDecoratorConfig<TTypes>) {
+  return (target: any): TTypes[any] => {
     Reflect.defineMetadata(GRAPHQL_OBJECT_TYPE, new GraphQLUnionType({
       name: config.name,
       resolveType: (...args) => {

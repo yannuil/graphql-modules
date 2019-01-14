@@ -291,20 +291,18 @@ describe('ResolverFirst', async () => {
   });
   describe('Union types', async () => {
     it('should build union type using UnionType decorator', async () => {
-      const Foo = UnionType<Foo>({ name: 'Foo', types: [String, Number], resolveType: (() => {}) as any })({});
-      // tslint:disable-next-line:ban-types
-      type Foo = String | Number;
+      const Foo = UnionType({ name: 'Foo', types: [String, Number], resolveType: (() => {}) as any })({});
+      type Foo = string | number;
       expect(stripWhitespaces(printType(getObjectTypeFromClass(Foo as any)))).toBe(stripWhitespaces(`
         union Foo = String | Float
       `));
     });
     it('should build object type with union field', async () => {
-      const Foo = UnionType<Foo>({ name: 'Foo', types: [String, Number], resolveType: (() => {}) as any })({});
-      // tslint:disable-next-line:ban-types
-      type Foo = String | Number;
+      const Foo = UnionType({ name: 'Foo', types: [String, Number], resolveType: (() => {}) as any })({});
+      type Foo = string | number;
       @ObjectType()
       class Query {
-        @FieldProperty({ type: Foo as any })
+        @FieldProperty({ type: Foo })
         foo: Foo;
       }
       expect(stripWhitespaces(printType(getObjectTypeFromClass(Query)))).toBe(stripWhitespaces(`

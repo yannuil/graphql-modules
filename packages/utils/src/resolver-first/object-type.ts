@@ -2,7 +2,7 @@
 /// <reference path="../../../../node_modules/reflect-metadata/index.d.ts" />
 
 import { GraphQLObjectType, GraphQLObjectTypeConfig, GraphQLFieldConfig, GraphQLInputType, GraphQLArgumentConfig } from 'graphql';
-import { ObjectValue, Type, DESIGN_PARAMTYPES, DESIGN_TYPE, DESIGN_RETURNTYPE } from './common';
+import { ObjectValue, Type, DESIGN_PARAMTYPES, DESIGN_TYPE, DESIGN_RETURNTYPE, AnyType } from './common';
 import { getScalarTypeFromClass } from './scalar-type';
 import { getInputTypeFromClass } from './input-object-type';
 
@@ -16,13 +16,13 @@ export type FieldResolver<TSource, TArgs, TResult> = (
 
 export interface FieldDecoratorConfig<TSource, TArgs, TResult> {
   name?: string;
-  type?: Type<TResult> | GraphQLObjectType;
+  type?: Type<TResult> | GraphQLObjectType | AnyType;
   resolve?: FieldResolver<TSource, TArgs, TResult>;
 }
 
 export interface ArgumentParameterDecoratorConfig {
   name: string;
-  type?: Type<any> | GraphQLInputType;
+  type?: AnyType | GraphQLInputType;
   fieldName?: string;
 }
 
