@@ -16,7 +16,7 @@ export type FieldResolver<TSource, TArgs, TResult> = (
 
 export interface FieldDecoratorConfig<TSource, TArgs, TResult> {
   name?: string;
-  type?: Type<TResult> | GraphQLObjectType | AnyType | unknown;
+  type?: Type<TResult> | GraphQLObjectType | AnyType | unknown; // TODO: unknowns should be replaced with a proper type
   resolve?: FieldResolver<TSource, TArgs, TResult>;
 }
 
@@ -101,7 +101,7 @@ export function ObjectType<TSource, TContext>(config ?: Partial<GraphQLObjectTyp
   };
 }
 
-export function getObjectTypeFromClass<T>(target: Type<T> | unknown) {
+export function getObjectTypeFromClass<T>(target: Type<T> | unknown) { // TODO: unknowns should be replaced with a proper type
   if (target instanceof Array) {
     const elementType = getObjectTypeFromClass(target[0]);
     return elementType && new GraphQLList(elementType);
