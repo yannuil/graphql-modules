@@ -1,5 +1,8 @@
 import 'reflect-metadata';
-import { ObjectType, getObjectTypeFromClass, FieldProperty, FieldMethod, ArgumentParameter, InputObjectType, getInputTypeFromClass, InputFieldProperty, InterfaceType } from '../src/resolver-first';
+import {
+  ObjectType,
+  getObjectTypeFromClass,
+  FieldProperty, FieldMethod, ArgumentParameter, InputObjectType, getInputTypeFromClass, InputFieldProperty, InterfaceType, EnumType, getScalarTypeFromClass, ScalarType } from '../src/resolver-first';
 import { printType, graphql, GraphQLSchema, GraphQLObjectType, print, GraphQLInterfaceType } from 'graphql';
 function stripWhitespaces(str: string): string {
   return str.replace(/\s+/g, ' ').trim();
@@ -205,6 +208,83 @@ describe('ResolverFirst', async () => {
           foo: String
           bar: String
           qux: String
+        }
+      `));
+    });
+  });
+  describe('Scalar Type', async () => {
+    it('should build scalar type using ScalarType decorator', async () => {
+      @ScalarType()
+      class Foo {}
+      expect(stripWhitespaces(printType(getScalarTypeFromClass(Foo as any)))).toBe(stripWhitespaces(`
+        scalar Foo
+      `));
+    });
+    it('should build object type with scalar field', async () => {
+      @ScalarType()
+      class Foo {}
+      @ObjectType()
+      class Query {
+        @FieldProperty({ type: Foo as any })
+        foo: Foo;
+      }
+      expect(stripWhitespaces(printType(getObjectTypeFromClass(Query)))).toBe(stripWhitespaces(`
+        type Query {
+          foo: Foo
+        }
+      `));
+    });
+    it('should build input object type with scalar field', async () => {
+      @ScalarType()
+      class Foo {}
+      @InputObjectType()
+      class Bar {
+        @InputFieldProperty({ type: Foo as any })
+        foo: Foo;
+      }
+      expect(stripWhitespaces(printType(getInputTypeFromClass(Bar) as any))).toBe(stripWhitespaces(`
+        input Bar {
+          foo: Foo
+        }
+      `));
+    });
+  });
+  describe('EnumType', async () => {
+    it('should build enum type using EnumType decorator', async () => {
+      enum Foo { a = 'a', b = 'b' }
+      EnumType({ name: 'Foo' })(Foo);
+      expect(stripWhitespaces(printType(getScalarTypeFromClass(Foo as any)))).toBe(stripWhitespaces(`
+        enum Foo {
+          a
+          b
+        }
+      `));
+    });
+    it('should build object type with enum field', async () => {
+      enum Foo { a = 'a', b = 'b' }
+      EnumType({ name: 'Foo' })(Foo);
+      @ObjectType()
+      class Query {
+        @FieldProperty({ type: Foo as any })
+        foo: Foo;
+      }
+      expect(stripWhitespaces(printType(getObjectTypeFromClass(Query)))).toBe(stripWhitespaces(`
+        type Query {
+          foo: Foo
+        }
+      `));
+    });
+    it('should build input object type with enum field', async () => {
+      enum Foo { a = 'a', b = 'b' }
+      EnumType({ name: 'Foo' })(Foo);
+      @InputObjectType()
+      class Bar {
+        @InputFieldProperty({ type: Foo as any })
+        foo: Foo;
+      }
+      expect(stripWhitespaces(printType(getInputTypeFromClass(Bar) as any))).toBe(stripWhitespaces(`
+        input Bar {
+          foo: Foo
         }
       `));
     });

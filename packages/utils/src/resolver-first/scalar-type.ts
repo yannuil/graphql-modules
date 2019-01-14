@@ -4,13 +4,14 @@
 import { GraphQLScalarTypeConfig, GraphQLScalarType, GraphQLString, GraphQLFloat, GraphQLBoolean } from 'graphql';
 import { Type } from './common';
 
-const GRAPHQL_SCALAR_TYPE = Symbol('graphql:scalar-type');
+export const GRAPHQL_SCALAR_TYPE = Symbol('graphql:scalar-type');
 
 export function ScalarType<TInternal, TExternal>(config ?: Partial<GraphQLScalarTypeConfig<TInternal, TExternal>>): ClassDecorator {
   return target => {
     Reflect.defineMetadata(GRAPHQL_SCALAR_TYPE, new GraphQLScalarType({
       name: target.name,
       parseValue: obj => Object.assign(Reflect.construct(target, []), obj) as TInternal,
+      parseLiteral: obj => Object.assign(Reflect.construct(target, []), obj) as TInternal,
       serialize: instance => Object.assign({}, instance),
       ...(config || {}),
     }), target);
