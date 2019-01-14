@@ -6,7 +6,7 @@ import { AnyType } from './common';
 interface UnionTypeDecoratorConfig<TTypes extends AnyType[]> {
   name: string;
   types: TTypes;
-  resolveType: (...args: any[]) => InstanceType<TTypes[any]>;
+  resolveType: (...args: any[]) => TTypes[any];
 }
 
 export function UnionType<TTypes extends Array<new (...args: any[]) => any>>(config: UnionTypeDecoratorConfig<TTypes>) {
