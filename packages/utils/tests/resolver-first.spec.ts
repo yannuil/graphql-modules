@@ -2,7 +2,7 @@ import 'reflect-metadata';
 import {
   ObjectType,
   getObjectTypeFromClass,
-  FieldProperty, FieldMethod, ArgumentParameter, InputObjectType, getInputTypeFromClass, InputFieldProperty, InterfaceType, EnumType, getScalarTypeFromClass, ScalarType } from '../src/resolver-first';
+  FieldProperty, FieldMethod, ArgumentParameter, InputObjectType, getInputTypeFromClass, InputFieldProperty, InterfaceType, EnumType, getScalarTypeFromClass, ScalarType, UnionType } from '../src/resolver-first';
 import { printType, graphql, GraphQLSchema, GraphQLObjectType, print, GraphQLInterfaceType } from 'graphql';
 function stripWhitespaces(str: string): string {
   return str.replace(/\s+/g, ' ').trim();
@@ -284,6 +284,31 @@ describe('ResolverFirst', async () => {
       }
       expect(stripWhitespaces(printType(getInputTypeFromClass(Bar) as any))).toBe(stripWhitespaces(`
         input Bar {
+          foo: Foo
+        }
+      `));
+    });
+  });
+  describe('Union types', async () => {
+    it('should build union type using UnionType decorator', async () => {
+      const Foo = UnionType<Foo>({ name: 'Foo', types: [String, Number], resolveType: (() => {}) as any })({});
+      // tslint:disable-next-line:ban-types
+      type Foo = String | Number;
+      expect(stripWhitespaces(printType(getObjectTypeFromClass(Foo as any)))).toBe(stripWhitespaces(`
+        union Foo = String | Float
+      `));
+    });
+    it('should build object type with union field', async () => {
+      const Foo = UnionType<Foo>({ name: 'Foo', types: [String, Number], resolveType: (() => {}) as any })({});
+      // tslint:disable-next-line:ban-types
+      type Foo = String | Number;
+      @ObjectType()
+      class Query {
+        @FieldProperty({ type: Foo as any })
+        foo: Foo;
+      }
+      expect(stripWhitespaces(printType(getObjectTypeFromClass(Query)))).toBe(stripWhitespaces(`
+        type Query {
           foo: Foo
         }
       `));
