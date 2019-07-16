@@ -24,6 +24,7 @@
     "apollo-cache-inmemory": "1.6.2",
     "apollo-client": "2.6.3",
     "apollo-link-schema": "1.2.3",
+    "graphql-subscriptions": "1.1.0",
     "graphql-tag": "2.10.1",
     "jest": "24.8.0",
     "typescript": "3.5.3"
