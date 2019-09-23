@@ -1,0 +1,13 @@
+{
+  "name": "accounts",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "express": "latest",
+    "express-graphql": "latest",
+    "@graphql-modules/core": "0.7.13-alpha-f7b2973.16+f7b2973",
+    "graphql": "latest"
+  }
+}

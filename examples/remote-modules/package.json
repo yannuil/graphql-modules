@@ -1,0 +1,31 @@
+{
+    "name": "remote-modules",
+    "private": true,
+    "main": "gateway.ts",
+    "version": "1.0.0",
+    "workspaces": [
+      "services/*"
+    ],
+    "scripts": {
+      "start-gateway": "ts-node gateway.ts",
+      "start-service-accounts": "ts-node services/accounts/index.ts",
+      "start-service-reviews": "ts-node services/reviews/index.ts",
+      "start-service-products": "ts-node services/products/index.ts",
+      "start-service-inventory": "ts-node services/inventory/index.ts",
+      "start-services": "concurrently \"yarn:start-service-*\""
+    },
+    "devDependencies": {
+      "lerna": "latest",
+      "ts-node": "latest",
+      "concurrently": "latest"
+    },
+    "dependencies": {
+      "@graphql-modules/core": "0.7.13-alpha-f7b2973.16+f7b2973",
+      "@types/graphql": "latest",
+      "express": "latest",
+      "express-graphql": "latest",
+      "graphql": "latest",
+      "node-fetch": "latest"
+    }
+  }
+  

@@ -3,6 +3,7 @@
   "scripts": {
     "start": "node index.js"
   },
+  "version": "1.0.0",
   "dependencies": {
     "@apollo/federation": "latest",
     "apollo-server": "latest",

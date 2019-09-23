@@ -5,6 +5,7 @@
   "workspaces": [
     "packages/*"
   ],
+  "version": "1.0.0",
   "scripts": {
     "start-gateway": "ts-node gateway.ts",
     "start-service-accounts": "ts-node services/accounts/index.ts",
