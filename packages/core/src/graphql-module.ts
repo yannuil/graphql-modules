@@ -106,7 +106,7 @@ export interface GraphQLModuleOptions<
    * All loaded class will be loaded as Singletons, and the instance will be
    * shared across all GraphQL executions.
    */
-  providers?: GraphQLModuleOption<Provider[], Config, Session, Context>;
+  providers?: GraphQLModuleOption<MaybePromise<Provider[]>, Config, Session, Context>;
   /** Object map between `Type.field` to a function(s) that will wrap the resolver of the field  */
   resolversComposition?: GraphQLModuleOption<ResolversComposerMapping, Config, Session, Context>;
   schemaDirectives?: GraphQLModuleOption<SchemaDirectives, Config, Session, Context>;
@@ -509,7 +509,7 @@ export class GraphQLModule<
           try {
             this.checkConfiguration();
             const [initialProviders, children] = await Promise.all([
-              Promise.resolve().then(() => this.selfProviders),
+              this.selfProvidersAsync,
               Promise.resolve().then(() => Promise.all(this.selfImports.map(module => module.injectorAsync)))
             ]);
             const injector = (this._cache.injector = new Injector<Session>({
@@ -1017,8 +1017,21 @@ export class GraphQLModule<
     if (providersDefinitions) {
       if (typeof providersDefinitions === 'function') {
         this.checkConfiguration();
-        providers = providersDefinitions(this);
+        const providersDefinitionsResult = providersDefinitions(this);
+        if (providersDefinitionsResult instanceof Promise) {
+          throw new Error(`
+            Providers of ${this.name} is not sync. So, you need to wait for it.
+            Please wait for 'injectorAsync' promise before starting your GraphQL Server.
+          `);
+        }
+        providers = providersDefinitionsResult;
       } else {
+        if (providersDefinitions instanceof Promise) {
+          throw new Error(`
+            Providers of ${this.name} is not sync. So, you need to wait for it.
+            Please wait for 'injectorAsync' promise before starting your GraphQL Server.
+          `);
+        }
         providers = providersDefinitions;
       }
     }
@@ -1035,6 +1048,38 @@ export class GraphQLModule<
       },
       ...providers
     ];
+  }
+
+  get selfProvidersAsync(): Promise<Provider[]> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        let providers = new Array<Provider>();
+        const providersDefinitions = await this._options.providers;
+        if (providersDefinitions) {
+          if (typeof providersDefinitions === 'function') {
+            this.checkConfiguration();
+            providers = await providersDefinitions(this);
+          } else {
+            providers = await providersDefinitions;
+          }
+        }
+        resolve([
+          {
+            provide: ModuleConfig(this),
+            useValue: this.config,
+            overwrite: true
+          },
+          {
+            provide: ModuleConfig,
+            useValue: this.config,
+            overwrite: true
+          },
+          ...providers
+        ]);
+      } catch (e) {
+        reject(e);
+      }
+    });
   }
 
   get selfResolversComposition(): ResolversComposerMapping {

@@ -41,6 +41,7 @@ export class Injector<Session extends object = any> {
   private _initialProviders = this.options.initialProviders || new Array<Provider>();
   private _children = this.options.children || new Array<Injector>();
   public onInstanceCreated: <T>(arg?: { serviceIdentifier: ServiceIdentifier<T>; instance: T }) => any = () => {};
+  private _nameServiceIdentifierMap = new Map<string, ServiceIdentifier<any>>();
   constructor(private options: InjectorOptions = {}) {
     for (const provider of this._initialProviders) {
       if (provider) {
@@ -78,6 +79,7 @@ export class Injector<Session extends object = any> {
         throw new ProviderAlreadyDefinedError(this._name, provider);
       }
       this._classMap.set(provider, provider);
+      this._nameServiceIdentifierMap.set(provider.name, provider);
       switch ((options && options.scope) || this._defaultProviderScope) {
         case ProviderScope.Application:
           this._applicationScopeServiceIdentifiers.push(provider);
@@ -124,6 +126,7 @@ export class Injector<Session extends object = any> {
 
     if (isValueProvider(provider)) {
       this.getScopeInstanceMap().set(provider.provide, provider.useValue);
+      // FIXME: this._nameServiceIdentifierMap.set(provider.provide.toString(), provider.provide);
     } else if (isClassProvider(provider)) {
       const providedClassOptions: ProviderOptions = provider.provide['prototype']
         ? Reflect.getMetadata(PROVIDER_OPTIONS, provider.provide)
@@ -134,6 +137,8 @@ export class Injector<Session extends object = any> {
         (providedClassOptions && providedClassOptions.scope) ||
         (useClassOptions && useClassOptions.scope);
       this._classMap.set(provider.provide, provider.useClass);
+      const name = provider.provide instanceof Function ? provider.provide.name : provider.provide.toString();
+      this._nameServiceIdentifierMap.set(name, provider.provide);
       for (const hook of this._hooks) {
         if (hook in provider.useClass.prototype) {
           if (!this._hookServiceIdentifiersMap.has(hook)) {
@@ -143,6 +148,8 @@ export class Injector<Session extends object = any> {
         }
       }
     } else if (isFactoryProvider(provider)) {
+      const name = provider.provide instanceof Function ? provider.provide.name : provider.provide.toString();
+      this._nameServiceIdentifierMap.set(name, provider.provide);
       this._factoryMap.set(provider.provide, provider.useFactory);
     } else {
       throw new ProviderNotValidError(this._name, provider['provide'] && provider);
@@ -186,7 +193,11 @@ export class Injector<Session extends object = any> {
         return this._sessionScopeServiceIdentifiers;
     }
   }
-  public get<T>(serviceIdentifier: ServiceIdentifier<T>, dependencyIndex?: number): T {
+  public get<T>(serviceIdentifier: ServiceIdentifier<T> | string, dependencyIndex?: number): T {
+    if (typeof serviceIdentifier === 'string' && this._nameServiceIdentifierMap.has(serviceIdentifier)) {
+      const realServiceIdentifier = this._nameServiceIdentifierMap.get(serviceIdentifier);
+      return this.get<T>(realServiceIdentifier);
+    }
     const applicationScopeInstanceMap = this.getScopeInstanceMap(ProviderScope.Application);
     const sessionScopeInstanceMap = this.getScopeInstanceMap(ProviderScope.Session);
     if (sessionScopeInstanceMap.has(serviceIdentifier)) {
@@ -271,6 +282,7 @@ export class Injector<Session extends object = any> {
       sessionInjector._applicationScopeServiceIdentifiers = this._applicationScopeServiceIdentifiers;
       sessionInjector._requestScopeServiceIdentifiers = this._requestScopeServiceIdentifiers;
       sessionInjector._sessionScopeServiceIdentifiers = [...this._sessionScopeServiceIdentifiers];
+      sessionInjector._nameServiceIdentifierMap = this._nameServiceIdentifierMap;
       this._sessionSessionInjectorMap.set(session, sessionInjector);
     }
     return this._sessionSessionInjectorMap.get(session);
