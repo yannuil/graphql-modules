@@ -173,4 +173,63 @@ describe('GraphQL Remote Module', () => {
     });
     expect(result.data.foo.bar).toBe('BAR of FOO');
   });
+  it('should handle non-GraphQL Module implementation', async () => {
+    // This represents a non-GraphQL Module implementation just returns the necessary things regarding to the operation and variables
+    const barModuleFetcher = async (operation: string, variables: any) => {
+      if (operation.includes('query TypeDefs')) {
+        return {
+          data: {
+            _graphqlModule: {
+              typeDefs: /* GraphQL */ `
+                type Foo {
+                  bar: String
+                }
+              `
+            }
+          }
+        };
+      } else if (operation.includes('resolve(')) {
+        if (variables.typeName === 'Foo') {
+          if (variables.fieldName === 'bar') {
+            const rootObj = JSON.parse(variables.root);
+            const returnData = 'BAR of ' + rootObj.id;
+            return { data: { _graphqlModule: { resolve: JSON.stringify(returnData) } } };
+          } else if (variables.fieldName === '__isTypeOf') {
+            const returnData = true;
+            return { data: { _graphqlModule: { resolve: JSON.stringify(returnData) } } };
+          }
+        }
+      }
+      return { data: { _graphqlModule: {} } };
+    };
+    const fooModule = new GraphQLModule({
+      imports: [getRemoteModule(barModuleFetcher, SECRET)],
+      typeDefs: /* GraphQL */ `
+        type Foo {
+          id: ID
+        }
+        type Query {
+          foo: Foo
+        }
+      `,
+      resolvers: {
+        Query: {
+          foo: () => ({ id: 'FOO' })
+        }
+      }
+    });
+    await fooModule.injectorAsync;
+    const schema = await fooModule.schemaAsync;
+    const result = await graphql({
+      schema,
+      source: /* GraphQL */ `
+        {
+          foo {
+            bar
+          }
+        }
+      `
+    });
+    expect(result.data.foo.bar).toBe('BAR of FOO');
+  });
 });
