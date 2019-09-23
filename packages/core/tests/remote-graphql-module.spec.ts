@@ -3,6 +3,8 @@ import { graphql } from 'graphql';
 import { Injectable } from '@graphql-modules/di';
 import 'reflect-metadata';
 
+const SECRET = 'SECRET';
+
 function createMockFetcher(graphqlModule: GraphQLModule) {
   return async (operation: string, variableValues?: any) => {
     const schema = await graphqlModule.schemaAsync;
@@ -32,7 +34,7 @@ describe('GraphQL Remote Module', () => {
             multiply: (_, { x, y }) => x * y
           }
         },
-        getRemoteControlResolvers(multiplyModule)
+        getRemoteControlResolvers(multiplyModule, SECRET)
       ]
     });
     const additionModule = new GraphQLModule({
@@ -50,11 +52,14 @@ describe('GraphQL Remote Module', () => {
             add: (_, { x, y }) => x + y
           }
         },
-        getRemoteControlResolvers(additionModule)
+        getRemoteControlResolvers(additionModule, SECRET)
       ]
     });
     const operationModule = new GraphQLModule({
-      imports: [getRemoteModule(createMockFetcher(multiplyModule)), getRemoteModule(createMockFetcher(additionModule))]
+      imports: [
+        getRemoteModule(createMockFetcher(multiplyModule), SECRET),
+        getRemoteModule(createMockFetcher(additionModule), SECRET)
+      ]
     });
     await operationModule.injectorAsync;
     const schema = await operationModule.schemaAsync;
@@ -86,11 +91,11 @@ describe('GraphQL Remote Module', () => {
             bar: root => 'BAR of ' + root.id
           }
         },
-        getRemoteControlResolvers(barModule)
+        getRemoteControlResolvers(barModule, SECRET)
       ]
     });
     const fooModule = new GraphQLModule({
-      imports: [getRemoteModule(createMockFetcher(barModule))],
+      imports: [getRemoteModule(createMockFetcher(barModule), SECRET)],
       typeDefs: /* GraphQL */ `
         type Foo {
           id: ID
@@ -129,13 +134,13 @@ describe('GraphQL Remote Module', () => {
     const barModule = new GraphQLModule({
       name: 'Bar',
       typeDefs: () => [getRemoteControlTypeDefs()],
-      resolvers: () => [getRemoteControlResolvers(barModule)],
+      resolvers: () => [getRemoteControlResolvers(barModule, SECRET)],
       providers: [BarProvider]
     });
 
     const fooModule = new GraphQLModule({
       name: 'Foo',
-      imports: [getRemoteModule(createMockFetcher(barModule))],
+      imports: [getRemoteModule(createMockFetcher(barModule), SECRET)],
       typeDefs: /* GraphQL */ `
         type Foo {
           id: ID

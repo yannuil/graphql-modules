@@ -5,7 +5,7 @@ export function getRemoteControlTypeDefs() {
   return /* GraphQL */ `
     scalar JSON
     type Query {
-      _graphqlModule: GraphQLModuleRemoteControl
+      _graphqlModule(secret: String): GraphQLModuleRemoteControl
     }
     type GraphQLModuleRemoteControl {
       typeDefs: String
@@ -16,10 +16,15 @@ export function getRemoteControlTypeDefs() {
   `;
 }
 
-export function getRemoteControlResolvers(graphqlModule: GraphQLModule) {
+export function getRemoteControlResolvers(graphqlModule: GraphQLModule, _secret: string) {
   return {
     Query: {
-      _graphqlModule: () => ({})
+      _graphqlModule: (_: any, { secret }: any) => {
+        if (secret !== _secret) {
+          throw new Error('Unauthorized!');
+        }
+        return {};
+      }
     },
     GraphQLModuleRemoteControl: {
       typeDefs: async () => {

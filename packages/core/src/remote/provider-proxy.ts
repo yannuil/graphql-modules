@@ -1,6 +1,6 @@
 import { Fetcher } from './types';
 
-export function getClassProviderProxy<T = any>(fetcher: Fetcher, providerName: string): T {
+export function getClassProviderProxy<T = any>(fetcher: Fetcher, providerName: string, secret: string): T {
   const fakeFunction = function() {};
   Object.defineProperty(fakeFunction, 'name', {
     value: providerName
@@ -16,13 +16,13 @@ export function getClassProviderProxy<T = any>(fetcher: Fetcher, providerName: s
               }
             } = await fetcher(
               /* GraphQL */ `
-                query ProviderNameMethodName($providerName: String, $methodName: String, $args: JSON) {
-                  _graphqlModule {
+                query ProviderNameMethodName($providerName: String, $methodName: String, $args: JSON, $secret: String) {
+                  _graphqlModule(secret: $secret) {
                     callProvider(providerName: $providerName, methodName: $methodName, args: $args)
                   }
                 }
               `,
-              { providerName, methodName, args: JSON.stringify(args) }
+              { providerName, methodName, args: JSON.stringify(args), secret }
             );
             return JSON.parse(returnData);
           };

@@ -13,20 +13,23 @@ import { GraphQLModule } from '../graphql-module';
 import { getClassProviderProxy } from './provider-proxy';
 import { Provider } from '@graphql-modules/di';
 
-export function getRemoteModule(fetcher: Fetcher) {
+export function getRemoteModule(fetcher: Fetcher, secret: string) {
   const typeDefsAsync = new Promise<DocumentNode>(async (resolve, reject) => {
     try {
       const {
         data: {
           _graphqlModule: { typeDefs: typeDefsStr }
         }
-      } = await fetcher(/* GraphQL */ `
-        {
-          _graphqlModule {
-            typeDefs
+      } = await fetcher(
+        /* GraphQL */ `
+          query TypeDefs($secret: String) {
+            _graphqlModule(secret: $secret) {
+              typeDefs
+            }
           }
-        }
-      `);
+        `,
+        { secret }
+      );
       resolve(parse(typeDefsStr));
     } catch (e) {
       reject(e);
@@ -57,13 +60,19 @@ export function getRemoteModule(fetcher: Fetcher) {
                 }
               } = await fetcher(
                 /* GraphQL */ `
-                  query TypeResolversFieldName($typeName: String, $fieldName: String, $root: JSON, $args: JSON) {
-                    _graphqlModule {
+                  query TypeResolversFieldName(
+                    $typeName: String
+                    $fieldName: String
+                    $root: JSON
+                    $args: JSON
+                    $secret: String
+                  ) {
+                    _graphqlModule(secret: $secret) {
                       resolve(typeName: $typeName, fieldName: $fieldName, root: $root, args: $args)
                     }
                   }
                 `,
-                { typeName, fieldName, root: JSON.stringify(root), args: JSON.stringify(args) }
+                { typeName, fieldName, root: JSON.stringify(root), args: JSON.stringify(args), secret }
               );
               return JSON.parse(returnData);
             };
@@ -76,13 +85,13 @@ export function getRemoteModule(fetcher: Fetcher) {
                 }
               } = await fetcher(
                 /* GraphQL */ `
-                  query TypeResolversisTypeOf($typeName: String, $fieldName: String, $root: JSON) {
-                    _graphqlModule {
+                  query TypeResolversisTypeOf($typeName: String, $fieldName: String, $root: JSON, $secret: String) {
+                    _graphqlModule(secret: $secret) {
                       resolve(typeName: $typeName, fieldName: $fieldName, root: $root)
                     }
                   }
                 `,
-                { typeName, fieldName: '__isTypeOf', root: JSON.stringify(root) }
+                { typeName, fieldName: '__isTypeOf', root: JSON.stringify(root), secret }
               );
               return JSON.parse(returnData);
             };
@@ -95,13 +104,13 @@ export function getRemoteModule(fetcher: Fetcher) {
                 }
               } = await fetcher(
                 /* GraphQL */ `
-                  query TypeResolversresolveType($typeName: String, $fieldName: String, $root: JSON) {
-                    _graphqlModule {
+                  query TypeResolversresolveType($typeName: String, $fieldName: String, $root: JSON, $secret: String) {
+                    _graphqlModule(secret: $secret) {
                       resolve(typeName: $typeName, fieldName: $fieldName, root: $root)
                     }
                   }
                 `,
-                { typeName, fieldName: '__resolveType', root: JSON.stringify(root) }
+                { typeName, fieldName: '__resolveType', root: JSON.stringify(root), secret }
               );
               return JSON.parse(returnData);
             };
@@ -119,16 +128,21 @@ export function getRemoteModule(fetcher: Fetcher) {
         data: {
           _graphqlModule: { providerNames }
         }
-      } = await fetcher(/* GraphQL */ `
-        {
-          _graphqlModule {
-            providerNames
+      } = await fetcher(
+        /* GraphQL */ `
+          query ProviderNames($secret: String) {
+            _graphqlModule(secret: $secret) {
+              providerNames
+            }
           }
-        }
-      `);
+        `,
+        { secret }
+      );
       const providers = [];
-      for (const providerName of providerNames) {
-        providers.push(getClassProviderProxy(fetcher, providerName));
+      if (providerNames) {
+        for (const providerName of providerNames) {
+          providers.push(getClassProviderProxy(fetcher, providerName, secret));
+        }
       }
       resolve(providers);
     } catch (e) {
