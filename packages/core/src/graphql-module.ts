@@ -1374,7 +1374,7 @@ export class GraphQLModule<
                   }
                 }
                 moduleSessionInfo.context = Object.assign<any, Context>(importsContext, moduleContext);
-                const res: ServerResponse = session && session['res'];
+                const res: ServerResponse = session && (session['ws'] || session['res']);
                 if (res && 'once' in res) {
                   if (!('_onceFinishListeners' in res)) {
                     res['_onceFinishListeners'] = [];
@@ -1389,6 +1389,21 @@ export class GraphQLModule<
                         delete res['_onceFinishListeners'];
                       }
                     }
+
+                    // TODO: It's sooooo ugly but that's why we call it "workaround"
+                    // Cleans up WebSocket when Operation has been stopped.
+                    const cleanUpWs = (msg: string) => {
+                      let data = undefined;
+                      try {
+                        data = JSON.parse(msg);
+                      } catch (e) {}
+
+                      if (data && data.type === 'stop') {
+                        cleanUpOnComplete();
+                        res.removeListener('message', cleanUpWs);
+                      }
+                    };
+                    res.addListener('message', cleanUpWs);
 
                     res.once('close', cleanUpOnComplete);
                     res.once('finish', cleanUpOnComplete);
