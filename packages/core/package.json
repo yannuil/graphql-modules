@@ -27,7 +27,7 @@
     "apollo-cache-inmemory": "1.6.6",
     "apollo-client": "2.6.10",
     "apollo-link-schema": "1.2.5",
-    "bob-the-bundler": "0.3.4",
+    "bob-the-bundler": "1.0.2",
     "graphql-tag": "2.10.4",
     "jest": "26.1.0",
     "typescript": "3.9.7"
